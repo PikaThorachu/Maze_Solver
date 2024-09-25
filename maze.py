@@ -1,4 +1,6 @@
 from cell import Cell
+import copy
+from time import sleep
 
 class Maze():
     def __init__(
@@ -17,25 +19,37 @@ class Maze():
         self.num_cols = num_cols
         self.cell_size_x = cell_size_x
         self.cell_size_y = cell_size_y
+        self.win = win
         self._create_cells()
 
     def _create_cells(self):
         self._cells = []
-        for cell in self._cells:
-            cell._draw_cell()
-                
-        # Step 1: start at (x1, y1), add cell size x and y to get the second point for the cell. Create cell 1, num rows -= 1
-        # Step 2: add cell size y to y1, start second cell at x1, y2, then repeat step 1.
-        # Step 3 - continue looping until num rows == 0
-
-        # Step 4: complete steps 1-3 for col 1, then num cols -= 1
-        # Step 5: repeat step for until num cols == 0
-
+        for i in range(self.num_cols):  # iterates over column number
+            col = []
+            for j in range(self.num_rows):  # iterates over row number
+                x1 = self.x1 + (self.cell_size_x * i)  # i tracks rows
+                y1 = self.y1 + (self.cell_size_y * j)  # j tracks cols
+                x2 = x1 + self.cell_size_x
+                y2 = y1 + self.cell_size_y
+                cell = Cell(x1, y1, x2, y2)
+                col.append(cell)
+            self._cells.append(col)  # append column after row completion
+        for i, col in enumerate(self._cells):
+            for j, cell in enumerate(col):
+                self._draw_cell(i, j)
 
     def _draw_cell(self, i, j):
-        # This method should calculate the x/y position of the Cell based on i, j, the cell_size, and the x/y position of the Maze itself. The x/y position of the maze represents how many pixels from the top and left the maze should start from the side of the window.
-        pass
+        # Calculate cell position
+        x_position = self.x1 + i * self.cell_size_x
+        y_position = self.y1 + j * self.cell_size_y
+    
+        # Assuming Cell has a 'draw' method to visualize itself
+        cell = self._cells[i][j]
+        cell.draw(x_position, y_position)
+    
+        # Trigger animation
+        self._animate()
 
     def _animate(self):
-        # The animate method is what allows us to visualize what the algorithms are doing in real time. It should simply call the window's redraw() method, then sleep for a short amount of time so your eyes keep up with each render frame. I slept for 0.05 seconds.
-        pass
+        self.win.redraw()
+        time.sleep(0.05)
